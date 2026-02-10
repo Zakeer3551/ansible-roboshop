@@ -1,0 +1,6 @@
+- name: mongodb playbook
+  hosts: local
+  vars:
+  - 
+  tasks:
+  - name:  
