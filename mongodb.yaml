@@ -1,6 +1,19 @@
 - name: mongodb playbook
-  hosts: local
+  hosts: mongodb
+  become: yes
   vars:
   - 
   tasks:
-  - name:  
+  - name: copy mongo repo
+    ansible.builtin.copy:
+      src: mongo.repo
+      dest: /etc/yum.repos.d/mongo.repo
+
+  - name: installing mogodb pacakage
+    ansible.builtin.dnf:
+      name: mongodb-org
+      state: present
+  
+  
+
+
