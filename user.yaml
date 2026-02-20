@@ -1,0 +1,59 @@
+- name: user playbook
+  become: yes
+  hosts: user
+  tasks:
+  - name: enabling nodejs-20 module
+    ansible.builtin.dnf: dnf module enable nodejs:20 -y
+
+  - name: installing nodejs
+    ansible.builtin.dnf:
+      name: nodejs
+      state: present
+
+  - name: creating system user roboshop
+    ansible.builtin.user:
+      name: roboshop
+      home: /app
+      shell: /sbin/nologin
+      system: true
+      comment: "Roboshop system user"
+
+  - name: deleting app directory
+    ansible.builtin.file:
+      name: /app
+      state: absent
+
+  - name: creating app directory
+    ansible.builtin.file:
+      name: /app
+      state: directory
+
+  - name: downloadling user application code
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip
+      dest: /tmp/user.zip
+
+  - name: unarchive the zip that is downloaded
+    ansible.builtin.unarchive:
+      src: /tmp/user.zip
+      dest: /app
+      remote_src: yes
+
+  - name: npm install - installing dependencies
+    community.general.npm:
+      path: /app
+  
+  - name: copying the systemctl service
+    ansible.builtin.template: # we are using template instead of copy, coz in user.service we are using placeholders like {{ REDIS_HOST }}
+      src: user.service
+      dest: /etc/systemd/system/user.service
+
+  - name: daemon reload
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+  
+  - name: start user
+    ansible.builtin.service:
+      name: user
+      state: restarted
+      enabled: yes
