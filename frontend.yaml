@@ -36,7 +36,6 @@
       src: /nginx.conf
       dest: /etc/nginx/nginx.conf 
 
-
   - name: enabling and restarting nginx
     ansible.builtin.service:
       name: nginx

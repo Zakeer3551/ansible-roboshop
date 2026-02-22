@@ -1,8 +1,6 @@
 - name: mongodb playbook
   hosts: mongodb
   become: yes
-  vars:
-  - 
   tasks:
   - name: copy mongo repo
     ansible.builtin.copy:
@@ -25,4 +23,5 @@
         name: mongod
         state: restarted
         enabled: yes
+  
 
